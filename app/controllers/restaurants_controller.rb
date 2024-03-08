@@ -1,36 +1,32 @@
 class RestaurantsController < ApplicationController
   def index
-  @restaurants = Restaurant.all
+    @restaurants = Restaurant.all
   end
+
   def show
-  @restaurant = Restaurant.find(params[:id])
+    @restaurant = Restaurant.find(params[:id])
+    @restaurant_reviews = @restaurant.reviews
+    @review = Review.new
   end
+
   def new
-  @restaurant = Restaurant.new
+    @restaurant = Restaurant.new
+    @review = Review.new
   end
+
   def create
     @restaurant = Restaurant.new(restaurant_params)
-    @restaurant.save
-    redirect_to restaurant_path(@restaurant)
-  end
-  def edit
-    @restaurant = Restaurant.find(params[:id])
-  end
-  # def update
-  #   @restaurant = Restaurant.find(params[:id])
-  #   @restaurant.update(restaurant_params)
-  #   redirect_to restaurant_path(@restaurant)
-  # end
 
-
-  def destroy
-
+    if @restaurant.save
+      redirect_to restaurant_path(@restaurant)
+    else
+      render :new, status: :unprocessable_entity
+    end
   end
 
-end
+  private
 
-private
-
-def restaurant_params
-  params.require(:restaurant).permit(:name, :address, :rating)
+  def restaurant_params
+    params.require(:restaurant).permit(:name, :address, :category)
+  end
 end
